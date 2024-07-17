@@ -46,12 +46,18 @@ extension MainModel: MainModelInput {
     
     func loadData(for urlString: String, at indexPath: IndexPath) {
         
-        guard let url = URL(string: urlString) else { return }
-        
-        if let data = try? Data(contentsOf: url) {
+        DispatchQueue.global(qos: .default).async {
             
-            dataService.write(image: data, for: urlString)
-            output.imageDataDidLoad(for: indexPath)
+            guard let url = URL(string: urlString) else { return }
+            
+            if let data = try? Data(contentsOf: url) {
+                
+                DispatchQueue.main.async {
+                    
+                    self.dataService.write(image: data, for: urlString)
+                    self.output.imageDataDidLoad(for: indexPath)
+                }
+            }
         }
     }
 }
